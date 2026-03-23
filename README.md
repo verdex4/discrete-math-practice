@@ -10,3 +10,4 @@
 - [Практика 1](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_1.ipynb): Проверка наличия свойств у бинарных отношений
 - [Практика 2](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_2.ipynb): Построение диаграммы Хассе для делителей натурального числа n
 - [Практика 3](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_3.ipynb): Поиск НОД по алгоритму Евклида и НОК
+- [Практика 4](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_4.ipynb): Разложение рациональных и иррациональлых чисел в цепные дроби
