@@ -11,3 +11,5 @@
 - [Практика 2](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_2.ipynb): Построение диаграммы Хассе для делителей натурального числа n
 - [Практика 3](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_3.ipynb): Поиск НОД по алгоритму Евклида и НОК
 - [Практика 4](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_4.ipynb): Разложение рациональных и иррациональлых чисел в цепные дроби
+- [Практика 5](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_5.ipynb): Решение линейного диафантова уравнения через цепные дроби
+- [Практика 6](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_6.ipynb): Нахождение n последних цифр для числа x, возведенного в степень p
