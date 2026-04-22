@@ -5,6 +5,7 @@
 - [РГР 1](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/rgr_1.ipynb): Операции над булевыми матрицами
 - [РГР 2](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/rgr_2.ipynb): Реализация топологической сортировки
 - [РГР 3](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/rgr_3.ipynb): Таблица Кэли для поворотов шестиугольника
+- [РГР 4](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/rgr_4.ipynb): Решение систем линейных сравнений (китайская теорема об остатках)
 
 ### Практические задачи
 - [Практика 1](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_1.ipynb): Проверка наличия свойств у бинарных отношений
