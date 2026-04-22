@@ -13,3 +13,4 @@
 - [Практика 4](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_4.ipynb): Разложение рациональных и иррациональлых чисел в цепные дроби
 - [Практика 5](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_5.ipynb): Решение линейного диафантова уравнения через цепные дроби
 - [Практика 6](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_6.ipynb): Нахождение n последних цифр для числа x, возведенного в степень p
+- [Практика 7 и Практика 8](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_7_8.ipynb): Построение слойного графа Кэли и графа Грюнберга-Кегеля для циклических групп n-ного порядка
