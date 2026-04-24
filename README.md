@@ -6,6 +6,7 @@
 - [РГР 2](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/rgr_2.ipynb): Реализация топологической сортировки
 - [РГР 3](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/rgr_3.ipynb): Таблица Кэли для поворотов шестиугольника
 - [РГР 4](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/rgr_4.ipynb): Решение систем линейных сравнений (китайская теорема об остатках)
+- [РГР 5](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/rgr_5.ipynb): Шифрование при помощи RSA-алгоритма
 
 ### Практические задачи
 - [Практика 1](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_1.ipynb): Проверка наличия свойств у бинарных отношений
