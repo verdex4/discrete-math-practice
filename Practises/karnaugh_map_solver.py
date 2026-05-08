@@ -1,8 +1,13 @@
-from typing import List
+from typing import List, Tuple, Dict
 from itertools import product, combinations
 import math
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 class Solver:
     def __init__(self, f: str):
@@ -10,44 +15,76 @@ class Solver:
         
         Правила записи:
         * Переменные должны начинаться с буквы
-        * Не должно быть переменных в верхнем и нижнем регистрах
+        * Не должно быть переменных в верхнем и нижнем регистрах (например, a и A)
 
         Примеры:
         1. f = "a and (b or c)"
         2. f = "b and a and not(a and b)"
-        3. f = "not((x1 or x2) and x3)"
+        3. f = "NOT((x1 OR x2) AND x3)"
         """
-        self.f = f.lower() # переводим функцию в нижний регистр
-        self.vars = self._get_vars() # список переменных
-        self.n = len(self.vars) # количество переменных
-        self.truth_table = self._get_truth_table() # таблица истинности
-        print(f"f = {self.f}")
-        print(f"vars = {self.vars}")
-        print(f"truth_table = {self.truth_table}")
+        # переводим функцию в нижний регистр
+        self.f = f.lower() 
+        logger.debug(f"f = {self.f}")
+
+        # список переменных и их количество
+        self.vars = self._get_vars()
+        self.n = len(self.vars)
+
+        # таблица истинности, словарь (x1, x2, ..., xn): f(x1, x2, ..., xn)
+        self.truth_table = self._get_truth_table()
+
         # количество строк в карте Карно
         self.rows = 2 ** ((self.n - 2) // 2 + 1)
+        logger.debug(f"rows = {self.rows}")
+
         # количество столбцов в карте Карно
         self.cols = 2 ** (((self.n - 2) // 2) + ((self.n - 2) % 2) + 1)
-        # переменные в строках
-        self.row_vars = self.vars[:int(math.log2(self.rows))]
-        # переменные в столбцах
-        self.col_vars = self.vars[int(math.log2(self.rows)):]
-        print(f"rows = {self.rows}")
-        print(f"cols = {self.cols}")
-        print(f"row_vars = {self.row_vars}")
-        print(f"col_vars = {self.col_vars}")
+        logger.debug(f"cols = {self.cols}")
+
         # карта Карно в виде таблицы
         self.karnaugh_map = self._get_karnaugh_map()
-        print("karnaugh_map")
-        print(self.karnaugh_map)
+
         # находим пары элементов, чтобы они покрывали все единицы в карте
         self.pairs = self._get_pairs()
-        print(f"pairs = {self.pairs}")
+
+        # выводим минимизированную функцию
         self.output = self._get_output()
-        print(f"output = {self.output}")
     
-    def solve(self):
+    def solve(self) -> str:
+        """Возвращает строковое представление минимизированной булевой функции f."""
         return self.output
+    
+    def visualize_karnaugh_map(self) -> None:
+        """Визуализирует карту Карно."""
+        # переменные в строках
+        row_vars = self.vars[:int(math.log2(self.rows))]
+        # переменные в столбцах
+        col_vars = self.vars[int(math.log2(self.rows)):]
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        ax.axis('off')
+
+        # создаем таблицу
+        table = ax.table(
+            cellText=self.karnaugh_map.values,
+            colLabels=self.karnaugh_map.columns,
+            rowLabels=self.karnaugh_map.index,
+            cellLoc='center',
+            loc='center'
+        )
+
+        table.scale(1, 2)
+        table.set_fontsize(12)
+
+        # добавляем подпись строк
+        ax.text(-0.1, 0.5, " * ".join(row_vars), transform=ax.transAxes, 
+                fontsize=14, fontweight='bold', va='center', rotation=90)
+
+        # добавляем подпись столбцов
+        ax.text(0.5, 0.8, " * ".join(col_vars), transform=ax.transAxes, 
+                fontsize=14, fontweight='bold', ha='center')
+
+        plt.show()
     
     def _get_vars(self) -> List[str]:
         """Возвращает список переменных в функции f."""
@@ -66,9 +103,11 @@ class Solver:
             if cur not in reserved and len(cur) > 0:
                 vars.add(cur)
 
-        return sorted(list(vars)) # упорядочиваем переменные
+        res = sorted(list(vars)) # упорядочиваем переменные
+        logger.debug(f"vars = {res}")
+        return res
     
-    def _get_truth_table(self):
+    def _get_truth_table(self) -> Dict[Tuple[int], int]:
         """Вычисляет таблицу истинности функции f."""
         result = {} # словарь вида {кортеж значений переменных: значение функции}
 
@@ -77,6 +116,7 @@ class Solver:
             d = dict(zip(self.vars, tuple)) # словарь вида {переменная: значение}
             result[tuple] = self._solve_boolean(**d) # добавляем результат
 
+        logger.debug(f"truth_table = {result}")
         return result
     
     def _solve_boolean(self, **variables):
@@ -91,7 +131,7 @@ class Solver:
         except NameError as e:
             return f"Ошибка: переменная {e} не определена"
 
-    def _get_karnaugh_map(self):
+    def _get_karnaugh_map(self) -> pd.DataFrame:
         """Вычисляет карту Карно."""
         def gray_code(n, digits):
             """Заполняет n чисел согласно коду Грея и возвращает строковое представление из digits элементов."""
@@ -107,17 +147,18 @@ class Solver:
         data = [] # значения в таблице
         index = gray_code(self.rows, int(math.log2(self.rows))) # названия строк
         columns = gray_code(self.cols, int(math.log2(self.cols))) # названия столбцов
-        print(f"index = {index}")
-        print(f"columns = {columns}")
         
         # заполняем значения таблицы
         for row in index:
             for col in columns:
                 data.append(self.truth_table[tuple(int(c) for c in row + col)])
 
-        return pd.DataFrame(data=np.array(data).reshape(self.rows, self.cols), 
+        res = pd.DataFrame(data=np.array(data).reshape(self.rows, self.cols), 
                             index=index, 
                             columns=columns)
+        logger.debug("karnaugh_map")
+        logger.debug(res)
+        return res
     
     def _get_pairs(self) -> List[List[tuple]]:
         """Возвращает минимально возможный список пар переменных, состоящих из 1 в карте Карно."""
@@ -128,7 +169,6 @@ class Solver:
                 if self.karnaugh_map.iloc[i, j] == 1:
                     valid_positions.add((i, j))
         
-        print(valid_positions)
         # группируем по 2 элемента по вертикали или горизонтали (не всегда эффективно)
         all_pairs = []
         for pos in valid_positions:
@@ -139,8 +179,6 @@ class Solver:
                     if (other_pos, pos) not in all_pairs:
                         all_pairs.append((pos, other_pos))
         
-        print(all_pairs)
-        print(len(all_pairs))
         
         # находим минимальные пары
         for cnt in range(1, len(all_pairs)):
@@ -155,7 +193,8 @@ class Solver:
                 if seen == valid_positions:
                     return result
 
-    def _get_output(self):
+    def _get_output(self) -> str:
+        """Возвращает строковое представление минимизированой булевой функции f."""
         output = "f = "
         for pair in self.pairs:
             prod = ""
@@ -171,6 +210,7 @@ class Solver:
                     prod += " and "
             output = output + prod[:-5] + " or "
         output = output[:-4]
+        logger.debug(f"output = {output}")
         return output
     
 
