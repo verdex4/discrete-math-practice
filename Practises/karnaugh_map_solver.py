@@ -103,7 +103,7 @@ class Solver:
         for s in strs:
             cur = ""
             for c in s:
-                if c == ')' and len(cur) > 0:
+                if c == ')' and len(cur) > 0 and cur not in reserved:
                     vars.add(cur)
                     cur = ""
                 if cur in reserved:
@@ -283,3 +283,7 @@ class Solver:
         logger.debug(f"output = {output}")
         return output
     
+
+f = "(x1 and x2 and not(x4)) or (x1 and x2 and x4) or (not(x1) and x3 and x5) or (not(x1) and x3 and not(x5)) or (x1 and not(x2) and x3)"
+solver = Solver(f)
+print(solver.solve())
