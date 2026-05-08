@@ -41,11 +41,20 @@ class Solver:
         self.cols = 2 ** (((self.n - 2) // 2) + ((self.n - 2) % 2) + 1)
         logger.debug(f"cols = {self.cols}")
 
+        # количество битов в строке (то есть количество цифр)
+        self.x_bits = int(math.log2(self.rows))
+        logger.debug(f"x_bits = {self.x_bits}")
+
+        # количество битов в столбце
+        self.y_bits = int(math.log2(self.cols))
+        logger.debug(f"y_bits = {self.y_bits}")
+
         # карта Карно в виде таблицы
         self.karnaugh_map = self._get_karnaugh_map()
 
-        # находим пары элементов, чтобы они покрывали все единицы в карте
-        self.pairs = self._get_pairs()
+        # находим области, чтобы они покрывали все единицы в карте
+        self.areas = self._get_areas()
+        logger.debug(f"pairs = {self.areas}")
 
         # выводим минимизированную функцию
         self.output = self._get_output()
@@ -57,9 +66,9 @@ class Solver:
     def visualize_karnaugh_map(self) -> None:
         """Визуализирует карту Карно."""
         # переменные в строках
-        row_vars = self.vars[:int(math.log2(self.rows))]
+        row_vars = self.vars[:self.x_bits]
         # переменные в столбцах
-        col_vars = self.vars[int(math.log2(self.rows)):]
+        col_vars = self.vars[self.x_bits:]
 
         fig, ax = plt.subplots(figsize=(8, 4))
         ax.axis('off')
@@ -133,20 +142,12 @@ class Solver:
 
     def _get_karnaugh_map(self) -> pd.DataFrame:
         """Вычисляет карту Карно."""
-        def gray_code(n, digits):
-            """Заполняет n чисел согласно коду Грея и возвращает строковое представление из digits элементов."""
-            result = []
-            for i in range(n):
-                # формула кода Грея: G = B XOR (B >> 1), где B - двоичное число
-                gray = i ^ (i >> 1)
-                gray = f"{gray:0{digits}b}" # преобразуем в строковый вид с нулями слева
-                result.append(gray) # добавляем строку
-            
-            return result
         
         data = [] # значения в таблице
-        index = gray_code(self.rows, int(math.log2(self.rows))) # названия строк
-        columns = gray_code(self.cols, int(math.log2(self.cols))) # названия столбцов
+        # названия строк
+        index = [f"{self._to_gray(i):0{self.x_bits}b}" for i in range(self.rows)]
+        # названия столбцов
+        columns = [f"{self._to_gray(i):0{self.y_bits}b}" for i in range(self.cols)]
         
         # заполняем значения таблицы
         for row in index:
@@ -156,12 +157,18 @@ class Solver:
         res = pd.DataFrame(data=np.array(data).reshape(self.rows, self.cols), 
                             index=index, 
                             columns=columns)
-        logger.debug("karnaugh_map")
-        logger.debug(res)
+        logger.debug(f"karnaugh_map:\n{res}")
         return res
+
+    def _to_gray(self, n):
+        """Преобразует число в код Грея."""
+        return n ^ (n >> 1)
     
-    def _get_pairs(self) -> List[List[tuple]]:
-        """Возвращает минимально возможный список пар переменных, состоящих из 1 в карте Карно."""
+    def _get_areas(self) -> List[List[tuple]]:
+        """
+        Возвращает список минимального количества областей, покрывающих единицы в карте Карно.
+        Берёт области максимального размера.
+        """
         # заполняем позиции с единицами в карте Карно
         valid_positions = set()
         for i in range(self.rows):
@@ -169,52 +176,110 @@ class Solver:
                 if self.karnaugh_map.iloc[i, j] == 1:
                     valid_positions.add((i, j))
         
-        # группируем по 2 элемента по вертикали или горизонтали (не всегда эффективно)
-        all_pairs = []
-        for pos in valid_positions:
-            for other_pos in valid_positions:
-                # если позиции не совпадают, то проверяем, что они находятся в одном ряду или столбце
-                if pos != other_pos and (pos[0] == other_pos[0] or pos[1] == other_pos[1]):
-                    # не добавляем дубликаты
-                    if (other_pos, pos) not in all_pairs:
-                        all_pairs.append((pos, other_pos))
-        
-        
-        # находим минимальные пары
-        for cnt in range(1, len(all_pairs)):
-            for indices in combinations(range(len(all_pairs)), cnt):
-                result = []
+        # находим все области, покрывающие единицы
+        all_areas = []
+        size = self.rows * self.cols
+        stop = False
+        while size >= 2:
+            for area in combinations(valid_positions, size):
+                if not self._is_valid_area(area):
+                    # если область невалидна, пропускаем
+                    continue
+                all_areas.append(area)
                 seen = set()
-                for i in indices:
-                    pair = all_pairs[i]
-                    result.append(pair)
-                    for pos in pair:
+                # проверяем, хватит ли нам всех областей для покрытия единиц
+                for area in all_areas:
+                    for pos in area:
                         seen.add(pos)
                 if seen == valid_positions:
-                    return result
+                    # если хватает, останавливаемся
+                    stop = True
+                    break
+            if stop:
+                break
+            size //= 2
+        
+        # находим минимальные области
+        for cnt in range(1, len(all_areas) + 1):
+            for indices in combinations(range(len(all_areas)), cnt):
+                min_areas = []
+                seen = set()
+                for i in indices:
+                    area = all_areas[i]
+                    min_areas.append(area)
+                    for pos in area:
+                        seen.add(pos)
+                if seen == valid_positions:
+                    return min_areas
+    
+    def _is_valid_area(self, coords):
+        """Проверяет, является ли область валидной (прямоугольной)."""
+        n = len(coords)
+
+        # преобразуем координаты в код Грея
+        indices = []
+        for x, y in coords:
+            gray_x = self._to_gray(x)
+            gray_y = self._to_gray(y)
+            indices.append((gray_x << self.y_bits) | gray_y)
+
+        # находим маску изменяющихся бит
+        bit_or = 0
+        bit_and = indices[0]
+        for idx in indices:
+            bit_or |= idx
+            bit_and &= idx
+        
+        diff_mask = bit_or ^ bit_and
+
+        # для области размера 2^k должно меняться ровно k бит
+        if bin(diff_mask).count('1') != n.bit_length() - 1:
+            return False
+
+        # проверка на полноту
+        base = bit_and
+        change_bits = [1 << i for i in range(self.x_bits + self.y_bits) 
+                       if (diff_mask & (1 << i))]
+        
+        reconstructed = {base}
+        for bit in change_bits:
+            # удваиваем набор
+            new_elements = {val | bit for val in reconstructed}
+            reconstructed.update(new_elements)
+
+        return set(indices) == reconstructed
 
     def _get_output(self) -> str:
         """Возвращает строковое представление минимизированой булевой функции f."""
         output = "f = "
-        for pair in self.pairs:
-            prod = ""
-            str_repr1 = self.karnaugh_map.index[pair[0][0]] + self.karnaugh_map.columns[pair[0][1]]
-            str_repr2 = self.karnaugh_map.index[pair[1][0]] + self.karnaugh_map.columns[pair[1][1]]
-            for i, (c1, c2) in enumerate(zip(str_repr1, str_repr2)):
-                if c1 == c2:
-                    if c1 == "0":
-                        prod += "not("
-                    prod += self.vars[i]
-                    if c1 == "0":
-                        prod += ")"
-                    prod += " and "
+        for area in self.areas:
+            prod = "" # одна область - одно произведение
+            str_repr = [] # строковое представление области в виде 0 и 1
+            for x, y in area:
+                s = self.karnaugh_map.index[x] + self.karnaugh_map.columns[y]
+                str_repr.append(s)
+
+            # находим стабильные переменные в области и добавляем их в ответ
+            for i, digits in enumerate(zip(*str_repr)):
+                # если есть и 0, и 1, то эту переменную можно игнорировать
+                if len(set(digits)) != 1:
+                    continue
+                # остались либо все 0, либо все 1
+                if digits[0] == "0":
+                    prod += "not("
+                prod += self.vars[i]
+                if digits[0] == "0":
+                    prod += ")"
+                prod += " and "
+            
+            # нет стабильных переменных -> f = 1
+            if prod == "":
+                return "f = 1"
+
+            # убираем последнее and и складываем со следующими произведениями
             output = output + prod[:-5] + " or "
-        output = output[:-4]
+            
+        output = output[:-4] # убираем последнее or
         logger.debug(f"output = {output}")
         return output
     
-
-sol = Solver("not(x1) and x2 and x3 or x1 and x2 and x3 or x1 and not(x2) and not(x3) or x1 and not(x2) and x3")
-sol = Solver("not(x1) and not(x2) and not(x3) or not(x1) and not(x2) and x3 or not(x1) and x2 and x3 or x1 and not(x2) and not(x3) or x1 and not(x2) and not(x3) or x1 and not(x2) and x3 or x1 and x2 and x3")
-out = sol.output
-sec = Solver(out[4:])
