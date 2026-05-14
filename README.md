@@ -3,12 +3,12 @@
 
 ### Расчетно-графические работы
 
-1 семестр
+1 полусеместр
 - [РГР 1](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_1/rgr_1.ipynb): Операции над булевыми матрицами
 - [РГР 2](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_1/rgr_2.ipynb): Реализация топологической сортировки
 - [РГР 3](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_1/rgr_3.ipynb): Таблица Кэли для поворотов шестиугольника
 
-2 семестр
+2 полусеместр
 - [РГР 1](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_2/rgr_1.ipynb): Решение систем линейных сравнений (китайская теорема об остатках)
 - [РГР 2](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_2/rgr_2.ipynb): Шифрование при помощи RSA-алгоритма
 
@@ -20,3 +20,4 @@
 - [Практика 5](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_5.ipynb): Решение линейного диафантова уравнения через цепные дроби
 - [Практика 6](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_6.ipynb): Нахождение n последних цифр для числа x, возведенного в степень p
 - [Практика 7 и Практика 8](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_7_8.ipynb): Построение слойного графа Кэли и графа Грюнберга-Кегеля для циклических групп n-ного порядка
+- [Практика 9](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_9.ipynb): Минимизация булевых функций методом карт Карно
