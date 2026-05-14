@@ -4,13 +4,13 @@
 ### Расчетно-графические работы
 
 1 полусеместр
-- [РГР 1](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_1/rgr_1.ipynb): Операции над булевыми матрицами
-- [РГР 2](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_1/rgr_2.ipynb): Реализация топологической сортировки
-- [РГР 3](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_1/rgr_3.ipynb): Таблица Кэли для поворотов шестиугольника
+- [РГР 1](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/half_semester_1/rgr_1.ipynb): Операции над булевыми матрицами
+- [РГР 2](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/half_semester_1/rgr_2.ipynb): Реализация топологической сортировки
+- [РГР 3](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/half_semester_1/rgr_3.ipynb): Таблица Кэли для поворотов шестиугольника
 
 2 полусеместр
-- [РГР 1](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_2/rgr_1.ipynb): Решение систем линейных сравнений (китайская теорема об остатках)
-- [РГР 2](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/semester_2/rgr_2.ipynb): Шифрование при помощи RSA-алгоритма
+- [РГР 1](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/half_semester_2/rgr_1.ipynb): Решение систем линейных сравнений (китайская теорема об остатках)
+- [РГР 2](https://github.com/verdex4/discrete-math-practise/blob/main/RGR/half_semester_2/rgr_2.ipynb): Шифрование при помощи RSA-алгоритма
 
 ### Практические задачи
 - [Практика 1](https://github.com/verdex4/discrete-math-practise/blob/main/Practises/practise_1.ipynb): Проверка наличия свойств у бинарных отношений
