@@ -282,8 +282,3 @@ class Solver:
         output = output[:-4] # убираем последнее or
         logger.debug(f"output = {output}")
         return output
-    
-
-f = "(x1 and x2 and not(x4)) or (x1 and x2 and x4) or (not(x1) and x3 and x5) or (not(x1) and x3 and not(x5)) or (x1 and not(x2) and x3)"
-solver = Solver(f)
-print(solver.solve())
